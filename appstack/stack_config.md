@@ -65,7 +65,7 @@ grant all privileges on studentapp.* to 'student'@'10.128.0.5' identified by 'st
 
 ### Run the following command to create DB
 # mysql <studentapp.sql
-
+```
 
 # III) Verify DB Connection from Tomcat server.
 
