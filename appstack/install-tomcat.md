@@ -2,3 +2,8 @@
 ```
 # yum install tomcat -y
 ```
+
+# Start tincat service
+```
+# systemctl start tomcat
+```
