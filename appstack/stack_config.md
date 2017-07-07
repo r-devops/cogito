@@ -81,7 +81,7 @@ grant all privileges on studentapp.* to 'student'@'10.128.0.5' identified by 'st
 > select * from Student;
 ```
 
-### IV) Install & Configure Web Server to connect to Application
+# IV) Install & Configure Web Server to connect to Application
 
 ### 1) Install web Server.
 ```
