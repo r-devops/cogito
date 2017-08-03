@@ -37,6 +37,7 @@ fi
 
 ### Tomcat Instaallation
 echo -n -e "$Y Downloading Tomcat .. $N"
+yum install java -y &>/dev/null
 wget $URL -O /tmp/$TAR_FILE_NAME &>/dev/null
 tar tf /tmp/$TAR_FILE_NAME &>/dev/null
 if [ $? -eq 0 ]; then
