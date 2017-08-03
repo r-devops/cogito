@@ -12,6 +12,12 @@ N="\e[0m"
 URL="http://redrockdigimark.com/apachemirror/tomcat/tomcat-9/v9.0.0.M22/bin/apache-tomcat-9.0.0.M22.tar.gz"
 TAR_FILE_NAME=$(echo $URL |awk -F / '{print $NF}')
 TAR_DIR=$(echo $TAR_FILE_NAME|sed -e 's/.tar.gz//')
+
+MODJK_URL="http://redrockdigimark.com/apachemirror/tomcat/tomcat-connectors/jk/tomcat-connectors-1.2.42-src.tar.gz"
+MODJK_TAR_FILE_NAME=$(echo $MODJK_URL |awk -F / '{print $NF}')
+MODJK_TAR_DIR=$(echo $MODJK_TAR_FILE_NAME | sed -e 's/.tar.gz//')
+
+
 ### Root user check
 ID=`id -u`
 if [ $ID -ne 0 ]; then
@@ -103,9 +109,65 @@ else
         echo -e "$R FAILURE $N"
 fi
 
+### Configuring Web Server
+echo -n -e "$B Configuring Mod_JK .. $N"
+yum install httpd-devel gcc -y &>/dev//null
+wget $MODJK_URL -O /opt/$MODJK_TAR_FILE_NAME &>/dev/null
+cd /opt
+tar xf $MODJK_TAR_FILE_NAME
+cd $MODJK_TAR_DIR/native
+./configure --with-apxs=/bin/apxs &>/dev/null
+make &>/dev/null
+make install &>/dev/null
+echo 'LoadModule jk_module modules/mod_jk.so
+JkWorkersFile conf.d/workers.properties
+JkLogFile logs/mod_jk.log
+JkLogLevel info
+JkLogStampFormat "[%a %b %d %H:%M:%S %Y]"
+JkOptions +ForwardKeySize +ForwardURICompat -ForwardDirectories
+JkRequestLogFormat "%w %V %T"
+JkMount /student tomcatA
+JkMount /student/* tomcatA' >/etc/httpd/conf.d/mod_jk.conf
+
+echo '### Define workers
+worker.list=tomcatA
+### Set properties
+worker.tomcatA.type=ajp13
+worker.tomcatA.host=localhost
+worker.tomcatA.port=8009' >/etc/httpd/conf.d/workers.properties
+
+systemctl restart httpd 
+if [ $? -eq 0 ] ; then 
+	echo -e "$G SUCCESS $N"
+else
+	echo -e "$R FAILURE $N"
+fi
 
 
+### Restart Services
+echo -n -e "$C Restarting Mariadb .. "
+systemctl restart mariadb &>/dev/null
+if [ $? -eq 0 ]; then
+	echo -e "$G SUCCESS $N"
+else
+	echo -e "$R FAILURE $N"
+fi
 
+echo -n -e "$C Restarting TOmcat .. "
+pkill -9 java &>/dev/null
+/opt/tomcat/bin/startup.sh &>/dev/null
+if [ $? -eq 0 ]; then
+        echo -e "$G SUCCESS $N"
+else
+        echo -e "$R FAILURE $N"
+fi
+echo -n -e "$C Restarting Web Server .. "
+systemctl restart httpd &>/dev/null
+if [ $? -eq 0 ]; then
+        echo -e "$G SUCCESS $N"
+else
+        echo -e "$R FAILURE $N"
+fi
 
 
 
