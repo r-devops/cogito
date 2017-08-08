@@ -1,0 +1,5 @@
+- hosts: all
+  tasks:
+    - name: Print a sample message
+      debug:
+        msg: "hello, how are you?"

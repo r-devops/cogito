@@ -1,0 +1,9 @@
+- hosts: all
+  become: yes
+  vars_files:
+    - vars01.yml
+  tasks: 
+    - name: install package
+      package:
+        name: "{{ packname }}" 
+        state: installed

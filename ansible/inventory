@@ -1,0 +1,8 @@
+app01  
+
+[appservers]
+app01
+
+[appservers:vars]
+ENV=PROD
+
