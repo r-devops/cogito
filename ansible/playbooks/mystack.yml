@@ -56,6 +56,17 @@
         dest: "/etc/httpd/conf.d/{{item}}"
       with_items: "{{HTTP_CONF_FILES}}"
 
+    - name: restart httpd
+      service:  
+        name: httpd
+        state: restarted
+
+
+    - name: Instll java
+      package: 
+        name: java
+        state: installed
+
     - name: Download and extract tomcat
       unarchive:
         src: "{{TOMCAT_URL}}"
@@ -90,7 +101,7 @@
         dest: "{{TOMCAT_LOC}}/conf/context.xml" 
 
     - name: Start tomcat 
-      command: "{{TOMCAT_LOC}}/bin/startup.sh"
+      command: "nohup {{TOMCAT_LOC}}/bin/startup.sh"
 
     - name: Install mariadb
       package:
@@ -99,7 +110,8 @@
       with_items: 
         - mariadb
         - mariadb-server
-        - python-libs
+        - mariadb-devel
+        - python-devel
         - python-pip
 
     - name: Start marioadb
