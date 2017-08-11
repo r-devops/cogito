@@ -1,0 +1,10 @@
+- hosts: all
+  become: yes
+  tasks:
+    - name: Define a fact
+      set_fact:
+         PACK_NAME: httpd
+
+    - name: Print PACK_NAME fact
+      debug: 
+        msg: "{{PACK_NAME}}"

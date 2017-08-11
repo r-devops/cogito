@@ -1,0 +1,9 @@
+- hosts: all
+  tasks:
+    - name: Running false command
+      shell: "true"
+      register: OUT
+      ignore_errors: yes
+
+    - shell: echo Hello Failed
+      when: OUT|failed

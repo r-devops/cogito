@@ -1,0 +1,10 @@
+- hosts: localhost
+  vars:
+        a: "10"
+  tasks:
+        - set_fact:
+                b: "10"
+                A: "{{a}} / {{b}}"
+
+        - debug:
+                msg: "{{A}}"

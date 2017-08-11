@@ -1,0 +1,6 @@
+- hosts: all
+  gather_facts: no
+  become: yes
+  tasks:
+        - name: Start Tomcat 
+          command: nohup '/opt/apache-tomcat-9.0.0.M26/bin/startup.sh'

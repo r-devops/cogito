@@ -1,0 +1,9 @@
+- hosts: all
+  become: yes
+  vars:
+        IPADDR : 192.168.20.3 
+  tasks:
+        - name: Copy sample tempalte
+          template: 
+                src: files/sample.j2
+                dest: /tmp/sample

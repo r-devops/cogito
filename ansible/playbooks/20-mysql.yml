@@ -1,0 +1,13 @@
+- hosts: all
+  gather_facts: no
+  become: yes
+  tasks: 
+    - name: create database studnet
+      mysql_db:
+        name: studentapp
+        state: present 
+    - name: Import DB
+      mysql_db:
+        state: import
+        name: all
+        target : /tmp/student.sql

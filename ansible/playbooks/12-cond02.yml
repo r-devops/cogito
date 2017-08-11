@@ -1,0 +1,15 @@
+- hosts: all
+  tasks:
+    - name: Running false command
+      shell: "false"
+      register: OUT
+      ignore_errors: yes
+
+
+    - name: Rpint OUT
+      debug:
+        msg: "{{OUT.rc}}"
+
+    - name: Run some command
+      command: "true"
+      when: OUT.rc == 1
