@@ -1,0 +1,7 @@
+- hosts: all
+  tasks: 
+        - name: Remove authorized key 
+          authorized_key:
+                user: admin
+                state: absent
+                key: "{{ lookup('file', '/root/admin.pub') }}"

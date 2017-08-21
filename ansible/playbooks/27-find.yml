@@ -1,0 +1,15 @@
+- hosts: all
+  become: yes
+  tasks:
+    - name: Fidn files
+      find:
+        paths: "/opt/demo"
+        patterns: "*.txt"
+      register: out
+
+
+    - name: Remove files
+      file:
+        name: "{{item.path}}"
+        state: absent
+      with_items: "{{out.files}}"

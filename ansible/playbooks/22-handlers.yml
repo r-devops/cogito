@@ -1,0 +1,15 @@
+- hosts: all
+  become: yes
+  gather_facts: no
+  tasks:
+    - name: Copy mod_jk configuration
+      copy:
+        src: files/mod_jk.conf
+        dest: /etc/httpd/conf.d/mod_jk.conf
+      notify: Restart Web Service
+
+  handlers:
+    - name: Restart Web Service
+      service:
+        name: httpd
+        state: restarted

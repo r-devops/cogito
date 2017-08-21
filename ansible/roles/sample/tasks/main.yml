@@ -1,0 +1,15 @@
+- name: Print OS Vendor
+  debug:
+        msg: "OS Vendor = {{ansible_system_vendor}}"
+
+- name: Some task1
+  shell: "true"
+  notify: Sample handler
+  
+
+- name: Copy abc template
+  template:
+        src: abc.j2
+        dest: /tmp/abc
+
+- include: setup.yml

@@ -1,0 +1,5 @@
+- debug:
+        msg: "This is message from ROLE-A"
+
+- debug:
+        msg: "Training Technology  = {{TECH}}"

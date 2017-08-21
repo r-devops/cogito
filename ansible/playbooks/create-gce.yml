@@ -1,0 +1,33 @@
+- name: Create google instance
+  hosts: localhost
+  tasks:
+   - gce:
+      instance_names: my-test-instance1
+      zone: us-central1-a
+      machine_type: n1-standard-1
+      image: centos-7-v20170816
+      state: present
+      service_account_email: "ansible@junebatch-170007.iam.gserviceaccount.com"
+      credentials_file: "/root/ansible.json"
+      project_id: "junebatch-170007"
+      disk_size: 10
+     register: out
+
+   - add_host:
+        hostname: "{{item.private_ip}}"
+        groupname: new
+     with_items: "{{out.instance_data}}"
+
+   - name: Wait for SSH for instances
+     wait_for:
+        delay: 1
+        host: "{{ item.private_ip }}"
+        port: 22
+        state: started
+        timeout: 300
+     with_items: "{{ out.instance_data }}"
+
+- name: Run uptime commannd
+  hosts: new
+  tasks:
+        - shell : uptime  
