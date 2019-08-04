@@ -1,0 +1,10 @@
+- hosts: all
+  become: yes
+  tasks:
+    - name: Run some command
+      shell: ls 
+      register: OUT
+ 
+    - name: Print OUT Variable
+      debug:
+        msg: "{{OUT}}"

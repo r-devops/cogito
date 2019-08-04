@@ -1,0 +1,152 @@
+- hosts: all
+  become: yes
+  vars:
+     HTTP_PACK_LIST: [ 'httpd', 'httpd-devel' , 'gcc' ]
+     HTTP_SERV_NAME: httpd
+     HTTP_CONF_FILES:
+        - mod_jk.conf
+        - workers.properties
+     CONN_URL: "http://redrockdigimark.com/apachemirror/tomcat/tomcat-connectors/jk/tomcat-connectors-1.2.42-src.tar.gz"
+     CONN_BASE_DIR : '/opt'
+     TOMCAT_URL : "http://www-eu.apache.org/dist/tomcat/tomcat-9/v9.0.0.M26/bin/apache-tomcat-9.0.0.M26.tar.gz"
+     TOMCAT_BASE_DIR: '/opt'     
+     JDBC_URL : "https://github.com/carreerit/cogito/raw/master/appstack/mysql-connector-java-5.1.40.jar"
+     WAR_URL : "https://github.com/carreerit/cogito/raw/master/appstack/student.war"
+     DB_IPADDR : "localhost"
+
+  tasks:
+    - name: Install Web packages
+      package:
+        name: "{{item}}"
+        state: installed
+      with_items: "{{HTTP_PACK_LIST}}"
+
+    - name: Start Web Server
+      service:
+        name: "{{HTTP_SERV_NAME}}"
+        state: started
+        enabled: yes
+
+    - name: Download and extract APACHE-TOMCAT-Connector 
+      unarchive:
+        src: "{{CONN_URL}}"
+        dest: "/opt"
+        remote_src: yes
+
+    - name: Collecting the location of extracted tar file
+      shell: "echo {{CONN_URL}}|awk -F / '{print $NF}'|sed -e 's/.tar.gz//g'"
+      register: out
+
+    - name: Creating facts for tomcat connector lcoation
+      set_fact:
+        CONN_EXTR_DIR: "{{out.stdout}}"
+
+    - name: Creating facts for tomcat connector location
+      set_fact: 
+        CONN_SRC_LOC: "{{CONN_BASE_DIR}}/{{CONN_EXTR_DIR}}"
+
+    - name: Run ./configure and make and make install
+      shell: "./configure --with-apxs=/usr/bin/apxs && make && make install"
+      args:
+        chdir: "{{CONN_SRC_LOC}}/native"
+
+    - name: Copy httpd config files
+      copy:
+        src: "files/{{item}}"
+        dest: "/etc/httpd/conf.d/{{item}}"
+      with_items: "{{HTTP_CONF_FILES}}"
+
+    - name: restart httpd
+      service:  
+        name: httpd
+        state: restarted
+
+
+    - name: Instll java
+      package: 
+        name: java
+        state: installed
+
+    - name: Download and extract tomcat
+      unarchive:
+        src: "{{TOMCAT_URL}}"
+        dest: "/opt"
+        remote_src: yes
+      
+    - name: Collecting the location of extracted tomcat tar file
+      shell: "echo {{TOMCAT_URL}}|awk -F / '{print $NF}'|sed -e 's/.tar.gz//g'"
+      register: out
+
+    - name: Creating facts for tomcat lcoation
+      set_fact:
+        TOMCAT_EXTR_DIR: "{{out.stdout}}"
+
+    - name: Creating facts for tomcat location
+      set_fact:
+        TOMCAT_LOC: "{{TOMCAT_BASE_DIR}}/{{TOMCAT_EXTR_DIR}}"
+
+    - name: Download jdbc jar file 
+      get_url:
+        url: "{{JDBC_URL}}"
+        dest: "{{TOMCAT_LOC}}/lib"
+
+    - name: Download stundet application
+      get_url:
+        url: "{{WAR_URL}}"
+        dest: "{{TOMCAT_LOC}}/webapps"
+
+    - name: Setup DB Connection in context.xml
+      template: 
+        src: files/context.xml.j2
+        dest: "{{TOMCAT_LOC}}/conf/context.xml" 
+
+    - name: Start tomcat 
+      command: "nohup {{TOMCAT_LOC}}/bin/startup.sh"
+
+    - name: Install mariadb
+      package:
+        name: "{{item}}"
+        state: installed
+      with_items: 
+        - mariadb
+        - mariadb-server
+        - mariadb-devel
+        - python-devel
+        - python-pip
+
+    - name: Start marioadb
+      service:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    - name:  Copy student.sql file
+      copy:
+        src: files/student.sql
+        dest: /tmp/student.sql
+
+    - name: Install python mysql module
+      pip: 
+        name: MySQL-python
+   
+    - name: create database studnet
+      mysql_db:
+        name: studentapp
+        state: present
+
+    - name: Import DB
+      mysql_db:
+        state: import
+        name: all
+        target: /tmp/student.sql
+
+
+
+
+
+
+
+
+
+
+

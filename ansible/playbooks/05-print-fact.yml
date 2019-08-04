@@ -1,0 +1,6 @@
+- hosts: all
+  #gather_facts: no
+  tasks:
+    - name: print os arch
+      debug:
+        msg: "OS Arch = {{ansible_architecture}}"

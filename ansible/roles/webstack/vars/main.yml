@@ -1,0 +1,6 @@
+APP_IP_ADDRESS : localhost
+PACK_LIST:
+        - httpd
+        - httpd-devel
+        - gcc
+CONN_URL: "http://redrockdigimark.com/apachemirror/tomcat/tomcat-connectors/jk/tomcat-connectors-1.2.42-src.tar.gz"

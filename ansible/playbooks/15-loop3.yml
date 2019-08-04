@@ -1,0 +1,9 @@
+- hosts: all
+  gather_facts: no
+  tasks:
+    - name: print some valiues
+      debug:
+        msg: "Pack BName = {{item[0]}}    ,  Action Name = {{item[1]}}"
+      with_nested:
+        - [ 'httpd' , 'httpd-devel' ]
+        - [ 'install' , 'update', 'remove' ]

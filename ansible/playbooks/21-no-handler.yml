@@ -1,0 +1,12 @@
+- hosts: all
+  become: yes
+  tasks:
+    - name: Copy mod_jk configuration
+      copy:
+        src: files/mod_jk.conf
+        dest: /etc/httpd/conf.d/mod_jk.conf
+
+    - name: Restart Web Service
+      service:
+        name: httpd
+        state: restarted

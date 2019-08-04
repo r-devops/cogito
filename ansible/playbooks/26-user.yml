@@ -1,0 +1,6 @@
+- hosts: all
+  become: yes
+  tasks: 
+        - name: Add user rama
+          user:
+                name: rama

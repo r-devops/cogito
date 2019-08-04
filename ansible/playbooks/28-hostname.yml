@@ -1,0 +1,6 @@
+- hosts: all
+  become: yes
+  tasks:
+        - name: Change hostname
+          hostname:
+                name: "{{HOSTNAME}}"

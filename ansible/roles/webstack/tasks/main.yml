@@ -1,0 +1,16 @@
+- name: Install packages
+  package:
+    name: "{{item}}"
+    state: installed
+  with_items: "{{PACK_LIST}}"
+
+- name: Download and extract tomcat connector
+  unarchive:
+    src: "{{CONN_URL}}"
+    dest: /opt
+    remote_src: yes
+    
+- name: Compile and Install tomcat connector
+  shell: "./configure --with-apxs=/bin/apxs && make && make install"
+  args:
+    chdir: "/opt/tomcat-connectors-1.2.42-src/native"

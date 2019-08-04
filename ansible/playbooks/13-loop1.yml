@@ -1,0 +1,12 @@
+- hosts: all
+  become: yes
+  tasks:
+    - name: Install Web packages
+      package: 
+        name: "{{item}}" 
+        state: installed
+      with_items:
+        - httpd
+        - httpd-devel
+        - gcc
+        
